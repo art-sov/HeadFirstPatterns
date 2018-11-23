@@ -1,4 +1,4 @@
-package art.chapter02;
+package art.chapter02.view;
 
 public interface DisplayElement {
 
