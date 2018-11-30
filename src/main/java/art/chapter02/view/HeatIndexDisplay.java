@@ -5,8 +5,9 @@
  */
 package art.chapter02.view;
 
-import art.chapter02.Observer;
 import art.chapter02.weather.WeatherData;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  *
@@ -15,11 +16,11 @@ import art.chapter02.weather.WeatherData;
 public class HeatIndexDisplay implements Observer, DisplayElement{
     
     float heatIndex = 0.0f;
-    private WeatherData weatherData;
+    private Observable observable;
 
-    public HeatIndexDisplay(WeatherData weatherData) {
-        this.weatherData = weatherData;
-        weatherData.registerObserver(this);
+    public HeatIndexDisplay(Observable observable) {
+        this.observable = observable;
+        observable.addObserver(this);
     }
         
     private float computeHeatIndex(float t, float rh) {
@@ -35,8 +36,14 @@ public class HeatIndexDisplay implements Observer, DisplayElement{
     }
 
     @Override
-    public void update(float t, float rh, float pressure) {
-        heatIndex = computeHeatIndex(t, rh);
+    public void update(Observable observable, Object arg) {
+        
+        if (observable instanceof WeatherData){
+            WeatherData weatherData = (WeatherData) observable;
+             float t = weatherData.getTemp();
+             float rh = weatherData.getHumidity();
+             heatIndex = computeHeatIndex(t, rh);
+        }       
         display();
     }
 

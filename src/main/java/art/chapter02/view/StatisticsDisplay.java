@@ -5,8 +5,9 @@
  */
 package art.chapter02.view;
 
-import art.chapter02.Observer;
 import art.chapter02.weather.WeatherData;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  *
@@ -18,13 +19,12 @@ public class StatisticsDisplay implements DisplayElement, Observer{
     private float minTemp = 200;
     private float tempSum = 0.0f;
     private int numReadings;
-    private WeatherData weatherData;
+    private Observable observable;
 
-    public StatisticsDisplay(WeatherData weatherDate) {
-        this.weatherData = weatherDate;
-        weatherDate.registerObserver(this);
+    public StatisticsDisplay(Observable observable) {
+        this.observable = observable;
+        observable.addObserver(this);
     }
-    
     
     @Override
     public void display() {
@@ -33,18 +33,24 @@ public class StatisticsDisplay implements DisplayElement, Observer{
     }   
 
     @Override
-    public void update(float temp, float humidity, float pressure) {
-        tempSum += temp;
+    public void update(Observable observable, Object arg) {
         
-        numReadings++;
-        
-        if (temp > maxTemp){
-            maxTemp = temp;
+        if (observable instanceof WeatherData){
+            WeatherData weatherdata = (WeatherData) observable;
+            float temp = weatherdata.getTemp();
+            tempSum += temp;
+
+            numReadings++;
+
+            if (temp > maxTemp){
+                maxTemp = temp;
+            }
+
+            if (temp < minTemp){
+                minTemp = temp;
+            }    
         }
-        
-        if (temp < minTemp){
-            minTemp = temp;
-        }
+              
         display();
     }
 }
